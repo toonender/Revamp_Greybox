@@ -5,6 +5,7 @@ public class PlayerAttack : MonoBehaviour
     [Header("การตั้งค่าโจมตี")]
     public Transform attackPoint; // จุดศูนย์กลางการโจมตี 1
     public Transform attackPoint2; // จุดศูนย์กลางการโจมตี 2
+    public Transform attackPoint3;
     public float attackRange = 1.0f; // รัศมีการโจมตี
     public LayerMask enemyLayer; // กำหนดว่า Layer ไหนคือศัตรู
 
@@ -19,20 +20,25 @@ public class PlayerAttack : MonoBehaviour
 
     void Attack()
     {
-        // 1. สร้างวงกลมล่องหนเพื่อเช็คว่ามีศัตรูอยู่ในระยะของทั้ง 2 จุดหรือไม่
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
         Collider2D[] hitEnemies2 = Physics2D.OverlapCircleAll(attackPoint2.position, attackRange, enemyLayer);
+        Collider2D[] hitEnemies3 = Physics2D.OverlapCircleAll(attackPoint3.position, attackRange, enemyLayer);
 
-        // 2. สั่งทำลายศัตรูที่อยู่ในวงกลมจุดที่ 1
         foreach (Collider2D enemy in hitEnemies)
         {
             Destroy(enemy.gameObject);
         }
 
-        // 3. สั่งทำลายศัตรูที่อยู่ในวงกลมจุดที่ 2
         foreach (Collider2D enemy in hitEnemies2)
         {
-            // เช็คกันเหนียว เผื่อมีศัตรูตัวใหญ่อยู่ตรงกลางและโดนวงกลมทั้ง 2 วงทับซ้อนกัน (โดนจุดที่ 1 ทำลายไปแล้ว)
+            if (enemy != null)
+            {
+                Destroy(enemy.gameObject);
+            }
+        }
+
+        foreach (Collider2D enemy in hitEnemies3) // ⭐ เพิ่มตรงนี้
+        {
             if (enemy != null)
             {
                 Destroy(enemy.gameObject);
@@ -55,5 +61,8 @@ public class PlayerAttack : MonoBehaviour
         {
             Gizmos.DrawWireSphere(attackPoint2.position, attackRange);
         }
+
+        if (attackPoint3 != null)
+            Gizmos.DrawWireSphere(attackPoint3.position, attackRange);
     }
 }
